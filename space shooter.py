@@ -2,27 +2,35 @@ import pygame
 import time
 import os
 import random
+from pygame import mixer
+
 
 pygame.mixer.pre_init(44100, 16, 4, 4096) #frequency, size, channels, buffersize
 pygame.init()
-WIDTH, HEIGHT = 750, 750
+WIDTH, HEIGHT = 950, 750
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("SPACE SHOOTER")
 
+pygame.mixer.pre_init(44100, 16, 4, 4096)  # frequency, size, channels, buffersize
+pygame.init()
+pygame.mixer.music.load(os.path.join("music", "rickroll.wav"))
+pygame.mixer.music.set_volume(0.5)  # Điều chỉnh âm lượng nếu cần thiết
+pygame.mixer.music.play(-1)  # '-1' có nghĩa là âm nhạc sẽ lặp vô hạn
+
 # LOAD SPACESHIPS
-RED_SPACESHIP = pygame.image.load(os.path.join("assets", "pixel_ship_red_small.png"))
-BLUE_SPACESHIP = pygame.image.load(os.path.join("assets", "pixel_ship_blue_small.png"))
-GREEN_SPACESHIP = pygame.image.load(os.path.join("assets", "pixel_ship_green_small.png"))
-YELLOW_SPACESHIP = pygame.image.load(os.path.join("assets", "pixel_ship_yellow.png"))
+RED_SPACESHIP = pygame.image.load(os.path.join("assets", "enemy.png"))
+BLUE_SPACESHIP = pygame.image.load(os.path.join("assets", "space-ship.png"))
+GREEN_SPACESHIP = pygame.image.load(os.path.join("assets", "alien.jpg"))
+YELLOW_SPACESHIP = pygame.image.load(os.path.join("assets", "player.png"))
 
 # LOAD LASERS
 RED_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_red.png"))
 BLUE_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_blue.png"))
 GREEN_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_green.png"))
-YELLOW_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_yellow.png"))
+YELLOW_LASER = pygame.image.load(os.path.join("assets", "bullet.png"))
 
 # LOAD BACKGROUND
-BG = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background-black.png")), (WIDTH, HEIGHT))
+BG = pygame.transform.scale(pygame.image.load(os.path.join("assets", "vutru2.jpg")), (WIDTH, HEIGHT))
 
 # LOAD SOUND EFFECTS
 explosion_sound = pygame.mixer.Sound(os.path.join("music", "explosion.wav"))
@@ -122,7 +130,7 @@ class Player(Ship):
                         objs.remove(obj)
                         if laser in self.lasers:
                             self.lasers.remove(laser)
-    
+            
     def draw(self, window):
         super().draw(window)
         self.healthbar(WIN)
@@ -267,6 +275,7 @@ def main():
                 player.health -= 10
                 pygame.mixer.Channel(2).play(explosion_sound)
                 enemies.remove(enemy)
+                lives -= 1 
             elif enemy.y + enemy.get_height() > HEIGHT:
                 lives -= 1
                 enemies.remove(enemy)
